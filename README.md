@@ -1,4 +1,4 @@
-# CookiesGrabber
+# Cookies Grabber
 
 Extract local cookies from Google Chrome and save it in a json file in the desktop
 (then i'll do a UI and i'll add markmap)
