@@ -14,3 +14,6 @@ $ pip install cryptography
 - Firts the code extract the user of windows
 - Then the code search into every Google Chrome user's fold the cookies
 - Then the cookies files are desencrypted and it's saved in the json file
+
+## A simple script made by AguuZzz, give me a star to support me
+![Dance dance dance](https://media.tenor.com/p_4UALhVSkIAAAAd/pk-xd.gif)
