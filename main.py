@@ -138,7 +138,4 @@ def save_to_html():
     
     webbrowser.open('file://' + os.path.realpath(outputpath))
 
-save_to_html()
-        
-
-#get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)
+get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)
