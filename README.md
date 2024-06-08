@@ -2,6 +2,8 @@
 
 Extract local cookies from Google Chrome and save it in a json file in the desktop
 
+## You need to CLOSE chrome before use the script
+
 ## Requirements
 
 The script need these dependents:
