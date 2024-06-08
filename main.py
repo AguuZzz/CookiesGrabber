@@ -5,6 +5,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import base64
 import win32crypt
+from bs4 import BeautifulSoup
+from datetime import datetime
+import webbrowser
+import os
 
 user = os.environ['USERNAME']
 
@@ -86,6 +90,10 @@ def get_chrome_cookies():
 
         conn.close()
 
+        with open(f'./test.json', 'w') as json_file:
+            json.dump(cookies, json_file)
+
+        save_to_html()
         return cookies
 
 def obtener_key():
@@ -103,8 +111,34 @@ def obtener_key():
             print(f"Error al desencriptar la clave: {e}")
             return None
 
+def save_to_html():
+    with open('./test.json', 'r') as json_file:
+        datos = json.load(json_file)
+    
+    with open('./html/plantilla.html', 'r') as html_file:
+        soup = BeautifulSoup(html_file, 'html.parser')
 
+    output_div = soup.find('div', {'class': 'output'})
+    
+    for item in datos:
+        host_key = item['host_key']
+        desencriptados = item['valor']
+        h1 = soup.new_tag('h1', **{'class': 'valores'})
+        h1.string = f'{host_key}: {desencriptados}'
+        output_div.append(h1)
+    
+    now = datetime.now()
+    tiempo = now.strftime('%d-%m_%H-%M')
 
-cookies = get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)
-with open(f'C:\\Users\\{user}\\OneDrive\Escritorio\\tokens.json', 'w') as json_file:
-    json.dump(cookies, json_file)
+    outputname = f'output-{tiempo}.html'
+    outputpath = f'./html/{outputname}'
+    
+    with open(f'./html/{outputname}', 'w') as output_file:
+        output_file.write(str(soup))
+    
+    webbrowser.open('file://' + os.path.realpath(outputpath))
+
+save_to_html()
+        
+
+#get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)

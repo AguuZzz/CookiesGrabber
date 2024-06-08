@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Output</title>
+  </head>
+  <body>
+    <header style="height: 30px; width: 100%">
+      <h1 style="color: white; font-size: 15px; padding-left: 3px">
+        Made by:
+        <a style="color: white" href="https://github.com/AguuZzz">AguuZzz</a>
+      </h1>
+      <h1
+        style="
+          position: absolute;
+          color: white;
+          top: 0px;
+          right: 1%;
+          font-size: 15px;
+        "
+      >
+        Login tutorial
+        <a
+          style="color: white"
+          href="https://www.youtube.com/watch?v=QKzpFarJqdc"
+          >Click here</a
+        >
+      </h1>
+    </header>
+    <div class="output" id="output"></div>
+
+    <style>
+      body {
+        background-color: black;
+        margin: 0;
+        padding: 0;
+      }
+      .output {
+        width: 35%;
+        border: 2px solid transparent;
+        border-radius: 5px;
+        position: sticky;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 5%);
+        z-index: 1000;
+        background-color: black;
+        animation: borde 7s infinite linear;
+      }
+
+      @keyframes borde {
+        0%,
+        100% {
+          border-color: red;
+        }
+        10% {
+          border-color: orange;
+        }
+        20% {
+          border-color: yellow;
+        }
+        30% {
+          border-color: lime;
+        }
+        40% {
+          border-color: green;
+        }
+        50% {
+          border-color: teal;
+        }
+        60% {
+          border-color: blue;
+        }
+        70% {
+          border-color: indigo;
+        }
+        80% {
+          border-color: violet;
+        }
+        90% {
+          border-color: purple;
+        }
+      }
+
+      .output h1 {
+        color: aliceblue;
+        font-size: 20px;
+      }
+      ul,
+      li {
+        color: white;
+      }
+    </style>
+  </body>
+</html>
