@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import webbrowser
 import os
+from collections import defaultdict
 
 user = os.environ['USERNAME']
 
@@ -39,15 +40,30 @@ def desencriptar(encriptados):
             return ""
 
 
+def agrupar_cookies_por_host(cursor):
+    cookies_agrupadas = defaultdict(list)
+    
+    for host_key, name, path, encriptados in cursor.fetchall():
+        desencriptados = desencriptar(encriptados)
+        cookie = {
+            "nombre": name,
+            "ubi": path,
+            "valor": desencriptados
+        }
+        cookies_agrupadas[host_key].append(cookie)
+    
+    return cookies_agrupadas
 
 def get_chrome_cookies():
-
     if not os.path.exists(local_state_path):
         print("Error: No se encontró el archivo 'Local State'.")
         return
+    
     path_base = f"C:\\Users\\{user}\\AppData\\Local\\Google\\Chrome\\User Data"
 
     user_data_carpetas = [folder for folder in os.listdir(path_base) if os.path.isdir(os.path.join(path_base, folder))]
+
+    all_cookies = []
 
     for folder in user_data_carpetas:
         path_to_cookies = os.path.join(path_base, folder, "Network\\Cookies")
@@ -74,24 +90,23 @@ def get_chrome_cookies():
             continue
 
         cursor.execute("SELECT host_key, name, path, encrypted_value FROM cookies")
+        
+        # Agrupamos las cookies por host_key
+        cookies_agrupadas = agrupar_cookies_por_host(cursor)
 
-        cookies = []
-        for host_key, name, path, encriptados in cursor.fetchall():
-            desencriptados = desencriptar(encriptados)
-            cookies.append({
+        for host_key, cookies in cookies_agrupadas.items():
+            all_cookies.append({
                 "host_key": host_key,
-                "nombre": name,
-                "ubi": path,
-                "valor": desencriptados
+                "cookies": cookies
             })
 
         conn.close()
 
-        with open(f'./test.json', 'w') as json_file:
-            json.dump(cookies, json_file)
+    with open('./test.json', 'w') as json_file:
+        json.dump(all_cookies, json_file)
 
-        save_to_html()
-        return cookies
+    save_to_html()
+    return all_cookies
 
 def obtener_key():
     with open(local_state_path, 'r') as file:
@@ -116,24 +131,51 @@ def save_to_html():
         soup = BeautifulSoup(html_file, 'html.parser')
 
     output_div = soup.find('div', {'class': 'output'})
-    
+
+    cookies_agrupadas = defaultdict(list)
     for item in datos:
         host_key = item['host_key']
-        desencriptados = item['valor']
-        h1 = soup.new_tag('h1', **{'class': 'valores'})
-        h1.string = f'{host_key}: {desencriptados}'
-        output_div.append(h1)
-    
+        cookies = item['cookies']
+        cookies_agrupadas[host_key].extend(cookies)
+
+    for host_key, cookies in cookies_agrupadas.items():
+        container = soup.new_tag('div', **{'class': 'host-container'})
+
+        h1 = soup.new_tag('h1', **{'class': 'valores', 'onclick': 'toggleVisibility(this)'})
+        h1.string = f'{host_key}'
+        container.append(h1)
+
+        ul = soup.new_tag('ul', **{'class': 'cookie-list', 'style': 'display:none;'})
+        for cookie in cookies:
+            li = soup.new_tag('li')
+            li.string = f"{cookie['nombre']} - {cookie['ubi']} - {cookie['valor']}"
+            ul.append(li)
+        
+        container.append(ul)
+        output_div.append(container)
+
     now = datetime.now()
     tiempo = now.strftime('%d-%m_%H-%M')
 
     outputname = f'output-{tiempo}.html'
     outputpath = f'./html/{outputname}'
+
+    script_tag = soup.new_tag('script')
+    script_tag.string = """
+    function toggleVisibility(element) {
+        var ul = element.nextElementSibling;
+        if (ul.style.display === "none") {
+            ul.style.display = "block";
+        } else {
+            ul.style.display = "none";
+        }
+    }
+    """
+    soup.body.append(script_tag)
     
-    with open(f'./html/{outputname}', 'w') as output_file:
+    with open(outputpath, 'w') as output_file:
         output_file.write(str(soup))
     
     webbrowser.open('file://' + os.path.realpath(outputpath))
 
 get_chrome_cookies() # NO me hago responsable de lo que suceda luego de ejecutar esta funcion jiji:)
-#save_to_html()
